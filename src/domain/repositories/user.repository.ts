@@ -3,7 +3,7 @@ import { db } from "../../infrastructure/database/drizzle.database";
 import { usersTable } from "../../infrastructure/database/schemas/user.schema";
 import { User } from "../entities/user.entity";
 
-export interface IUserRepository {
+export interface IUserRepositoryTDO {
 
     save(props: User): Promise<void>
     findByEmail(email: string): Promise<User | null>
@@ -13,48 +13,44 @@ export interface IUserRepository {
 
 }
 
-export class UserRepository implements IUserRepository {
+export class UserRepository implements IUserRepositoryTDO {
 
     async save(props: User): Promise<void> {
-
         const values: typeof usersTable.$inferInsert = {
             email: props.email,
             password: props.password,
             nickname: props.nickname,
             id: props.id!, // this can be a string or undefined; if it's undefined, the entity generates a new UUID
-
         }
 
         await db.insert(usersTable).values(values).execute()
     }
 
     async findByEmail(email: string): Promise<User | null> {
+        const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email))
 
-        const [found] = await db.select().from(usersTable).where(eq(usersTable.email, email))
-
-        if (!found) {
+        if (!user) {
             return null;
         }
 
-        return new User(found.email, found.password, found.nickname, found.id)
+        return new User(user.email, user.password, user.nickname, user.id)
     }
 
     async findById(id: string): Promise<User | null> {
+        const [user] = await db.select().from(usersTable).where(eq(usersTable.id, id))
 
-        const [found] = await db.select().from(usersTable).where(eq(usersTable.id, id))
-
-        if (!found) {
+        if (!user) {
             return null;
         }
 
-        return new User(found.email, found.password, found.nickname, found.id)
+        return new User(user.email, user.password, user.nickname, user.id)
     }
 
     async update(user: User): Promise<void> {
 
       //
       // In this scenario, the User must receive all previous (or current) values
-      // from the database record or updadate func. These values are passed to the User instance
+      // from the database record or update func. These values are passed to the User instance
       // through the constructor.
       //
       // After that, the client calls the update function inside the User entity,
@@ -68,23 +64,15 @@ export class UserRepository implements IUserRepository {
       //
       //
 
+      const values: Omit<typeof usersTable.$inferInsert, 'id' | 'password'> = {
+          email: user.email,
+          nickname: user.nickname,
+      }
 
-        try {
-
-            const values: Omit<typeof usersTable.$inferInsert, 'id' | 'password'> = {
-                email: user.email,
-                nickname: user.nickname,
-            }
-
-         await db.update(usersTable).set(values).where(eq(usersTable.id, user.id!))
-
-        } catch (error) {
-            throw error;
-        }
-
-
+      await db.update(usersTable).set(values).where(eq(usersTable.id, user.id!))
     }
-    delete(id: string): Promise<void> {
+
+    async delete(id: string): Promise<void> {
 
     }
 }

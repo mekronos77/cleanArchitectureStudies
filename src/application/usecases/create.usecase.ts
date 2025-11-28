@@ -1,5 +1,6 @@
 import { User } from "../../domain/entities/user.entity";
-import type { IUserRepository } from "../../domain/repositories/user.repository";
+import type { IUserRepositoryTDO } from "../../domain/repositories/user.repository";
+import type { IUseCase } from "../../shared/iusecase.shared";
 
 export interface ICreateUserDTO {
     email: string,
@@ -7,8 +8,8 @@ export interface ICreateUserDTO {
     nickname: string,
 }
 
-export class CreateUser {
-    constructor(private userRepository: IUserRepository) {}
+export class CreateUser implements IUseCase<ICreateUserDTO, void> {
+    constructor(private userRepository: IUserRepositoryTDO) {}
     public async execute(props: ICreateUserDTO) {
        try {
          // props represent unvalidated data. Once a User instance is created and

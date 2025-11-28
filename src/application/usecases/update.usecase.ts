@@ -1,5 +1,6 @@
 import { User } from "../../domain/entities/user.entity";
-import type { IUserRepository } from "../../domain/repositories/user.repository";
+import type { IUserRepositoryTDO } from "../../domain/repositories/user.repository";
+import type { IUseCase } from "../../shared/iusecase.shared";
 
 export interface IUpdateUserDTO {
     id: string;
@@ -9,8 +10,8 @@ export interface IUpdateUserDTO {
 }
 
 
-export class UpdateUser {
-    constructor(private userRepository: IUserRepository) {}
+export class UpdateUser implements IUseCase<IUpdateUserDTO, void> {
+    constructor(private userRepository: IUserRepositoryTDO) {}
     public async execute(props: IUpdateUserDTO) {
 
         const currentUserData = await this.userRepository.findById(props.id)
@@ -26,7 +27,7 @@ export class UpdateUser {
         await this.userRepository.update(user)
 
         // The data sent by the user is optional, so the fields received by the update
-        // function are also optional — except for the id.
+        // function are also optional, except for the id.
         //
         // The id is not passed to the update function. It is only used in the
         // constructor and in the use case to load the user's current data from
