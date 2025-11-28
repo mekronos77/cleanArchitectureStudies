@@ -1,4 +1,5 @@
 import type { IUpdateUserDTO } from "../../DTOs/updateUser.dto"
+
 export class User {
     constructor(
         public email: string,
@@ -23,4 +24,8 @@ export class User {
             }
         })
     }
+}
+
+export function userEntityCaller(props: { email: string, password: string, nickname: string, avatar?: string, id?: string}) {
+    return new User(props.email, props.password, props.nickname, props.avatar, props.id)
 }

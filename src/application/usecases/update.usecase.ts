@@ -18,7 +18,7 @@ export class UpdateUser implements IUseCase<IUpdateUserDTO, void> {
         const user = new User(currentUserData.email, currentUserData.password, currentUserData.nickname, currentUserData.avatar, currentUserData.id)
 
         user.update({ nickname: props.nickname, email: props.email, avatar: props.avatar})
-    
+        
         await this.userRepository.update(user)
 
         // The data sent by the user is optional, so the fields received by the update

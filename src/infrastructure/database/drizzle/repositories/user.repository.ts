@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import type { IUserRepositoryTDO } from "../../../../application/repositories/iuser.repository";
-import { User } from "../../../../domain/entities/user.entity";
+import { User, userEntityCaller } from "../../../../domain/entities/user.entity";
 import { db } from "../drizzle.database";
 import { usersTable } from "../schemas/user.schema";
 
@@ -27,7 +27,7 @@ export class UserRepository implements IUserRepositoryTDO {
             return null;
         }
         
-        return new User(user.email, user.password, user.nickname, user.avatar, user.id)
+        return userEntityCaller({ email: user.email, password: user.password, nickname: user.nickname, avatar: user.avatar, id: user.id})
     }
 
     async findById(id: string): Promise<User | null> {
@@ -37,7 +37,8 @@ export class UserRepository implements IUserRepositoryTDO {
             return null;
         }
 
-       return new User(user.email, user.password, user.nickname, user.avatar, user.id)
+       return userEntityCaller({ email: user.email, password: user.password, nickname: user.nickname, avatar: user.avatar, id: user.id})
+       
     }
 
     async update(user: User): Promise<void> {
@@ -57,6 +58,7 @@ export class UserRepository implements IUserRepositoryTDO {
       // In this flow, sending the id is mandatory.
       //
       //
+      
       const values: Omit<typeof usersTable.$inferInsert, 'id' | 'password'> = {
           email: user.email,
           nickname: user.nickname,
