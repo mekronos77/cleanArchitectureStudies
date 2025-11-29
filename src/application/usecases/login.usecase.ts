@@ -1,6 +1,7 @@
 import type { ILoginUser } from "../../DTOs/loginUser.dto";
 import { Cryptography } from "../../infrastructure/services/hash.service";
-import { JwtService } from "../../infrastructure/services/jwt.service";
+import { jwtService } from "../../infrastructure/services/jwt.service";
+
 import type { IUseCase } from "../../shared/iusecase.shared";
 import type { IUserRepositoryTDO } from "../repositories/iuser.repository";
 
@@ -21,9 +22,7 @@ export class LoginUser implements IUseCase<ILoginUser, string> {
       id: user.id
     };
 
-    const jwtService = new JwtService(process.env.JWT_SECRET!);
-
-    const token = jwtService.sign({ payload: payload });
+    const token = jwtService.sign({ payload: payload }); // secret already comes in the instance in jwt.service.ts
 
     return token;
   }

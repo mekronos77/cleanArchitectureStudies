@@ -1,6 +1,6 @@
 import jwt, { JsonWebTokenError, TokenExpiredError, type JwtPayload } from "jsonwebtoken";
 
-export class JwtService {
+class JwtService {
   constructor(private jwtSecret: string) {}
   sign(input: { payload: JwtPayload }) {
     return jwt.sign(input.payload, this.jwtSecret, { expiresIn: "1h" });
@@ -16,3 +16,7 @@ export class JwtService {
     }
   }
 }
+
+const jwtService = new JwtService(process.env.JWT_SECRET!);
+
+export { jwtService };
