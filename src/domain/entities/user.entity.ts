@@ -8,14 +8,11 @@ export class User implements IUserDTO {
     public email: string,
     public password: string,
     public nickname: string,
-    public avatar?: string,
+    public avatar: string,
     public id?: string
   ) {
     if (id === undefined) {
       this.id = crypto.randomUUID();
-    }
-    if (avatar === undefined) {
-      this.avatar = "none";
     }
   }
 
@@ -34,7 +31,7 @@ export function newUserEntityCaller(props: {
   email: string;
   password: string;
   nickname: string;
-  avatar?: string;
+  avatar: string;
   id?: string;
 }) {
   return new User(props.email, props.password, props.nickname, props.avatar, props.id);

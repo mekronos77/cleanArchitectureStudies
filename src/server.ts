@@ -1,18 +1,22 @@
-// TODO: do this hehec
+import express, { type ErrorRequestHandler, type NextFunction, type Request, type Response } from "express";
+import userRouter from "./presentation/routes/user.router";
 
-import { CreateUser } from "./application/usecases/create.usecase";
-import { LoginUser } from "./application/usecases/login.usecase";
-import { UpdateUser } from "./application/usecases/update.usecase";
-import { UserRepository } from "./infrastructure/database/drizzle/repositories/user.repository";
+const app = express();
 
-const create = new CreateUser(new UserRepository());
+app.use(express.json());
 
-async function createUser(nickname: string, email: string, password: string) {
-  await create.execute({ nickname: nickname, email: email, password: password });
-}
+export const errorHandler: ErrorRequestHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
 
-const login = new LoginUser(new UserRepository());
+  const status = err.status || 500;
+  const message = err.message || "Internal Error";
 
-console.log(await login.execute({ email: "a@gmail.com", password: "123" }));
+  return res.status(status).json({
+    error: message
+  });
+};
 
-const update = new UpdateUser(new UserRepository());
+app.use(userRouter);
+
+app.use(errorHandler);
+app.listen(3000);

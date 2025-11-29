@@ -1,3 +1,4 @@
+import { HttpError } from "../../core/errors/httpError.error";
 import { newUserEntityCaller } from "../../domain/entities/user.entity";
 import type { IUpdateUserDTO } from "../../DTOs/updateUser.dto";
 import type { IUseCase } from "../../shared/iusecase.shared";
@@ -9,7 +10,7 @@ export class UpdateUser implements IUseCase<IUpdateUserDTO, void> {
     const currentUserData = await this.userRepository.findById(props.id);
 
     if (!currentUserData) {
-      throw new Error("User do not exists anymore.");
+      throw new HttpError(404, "User do not exists anymore.");
     }
 
     const user = newUserEntityCaller({

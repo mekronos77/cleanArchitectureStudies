@@ -1,10 +1,11 @@
+import { HttpError } from "../../core/errors/httpError.error";
 import { newUserEntityCaller } from "../../domain/entities/user.entity";
 import type { ICreateUserDTO } from "../../DTOs/createUser.dto";
 import { Cryptography } from "../../infrastructure/services/hash.service";
 import type { IUseCase } from "../../shared/iusecase.shared";
 import type { IUserRepositoryTDO } from "../repositories/iuser.repository";
 
-export class CreateUser implements IUseCase<ICreateUserDTO, void> {
+export class CreateUser implements IUseCase<ICreateUserDTO, { id: string }> {
   constructor(private userRepository: IUserRepositoryTDO) {}
   public async execute(props: ICreateUserDTO) {
     // props represent unvalidated data. Once a User instance is created and
@@ -23,9 +24,11 @@ export class CreateUser implements IUseCase<ICreateUserDTO, void> {
     // is responsible for handling validation.
 
     if (emailExists) {
-      throw new Error("Email already exists, try another one.");
+      throw new HttpError(401, "Email already exists, try another one.");
     }
 
     await this.userRepository.save(user);
+
+    return { id: user.id! };
   }
 }

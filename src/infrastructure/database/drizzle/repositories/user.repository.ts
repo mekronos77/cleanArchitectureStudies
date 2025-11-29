@@ -14,7 +14,7 @@ export class UserRepository implements IUserRepositoryTDO {
       id: props.id! // this can be a string or undefined; if it's undefined, the entity generates a new UUID
     };
 
-    await db.insert(usersTable).values(values).execute();
+    await db.insert(usersTable).values(values).$returningId();
   }
 
   async findByEmail(email: string): Promise<User | null> {
